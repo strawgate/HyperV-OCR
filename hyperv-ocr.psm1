@@ -1,8 +1,20 @@
 $Script:TesseractExe = ""
 $Script:TesseractLang = ""
 
+$Script:TesseractWhitelist = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxy-=1234567890_/\\\"!@#$%^&*():*.,~[]' + "'"
+
 $ErrorActionPreference = "stop"
 $ErrorView = 'DetailedView'
+
+Function Get-TesseractWhitelist { return $Script:TesseractWhitelist }
+
+Function Set-TesseractWhitelist { 
+    param (
+        $Whitelist
+    )
+
+    $Script:TesseractWhitelist = $Whitelist
+}
 
 Function Load-TesseractDefaults {
     $Executables = Get-ChildItem -Recurse -File -Filter "*.exe"
@@ -109,7 +121,7 @@ Function ConvertImage-ToText {
     )
     Assert-TesseractExecutable
 
-    $Result = & $TesseractExe -l $Language $Path stdout
+    $Result = & $TesseractExe -l $Language -c tessedit_char_whitelist="$($Script:TesseractWhitelist)" $Path stdout
 
     return $Result
 }
